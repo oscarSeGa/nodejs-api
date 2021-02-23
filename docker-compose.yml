@@ -1,0 +1,26 @@
+version: "3.2"
+
+services:
+  db:
+    container_name: "database"
+    image: "postgres:latest"
+#    restart: "always"
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: "12345678"
+      POSTGRES_USER: "admin"
+  back:
+    container_name: "api"
+    image: "node:latest"
+    working_dir: "/home/node/app"
+    volumes:
+      - "./:/home/node/app"
+      - "./config/node-entrypoint.sh:/usr/local/bin/node-entrypoint.sh:ro"
+    ports:
+      - "3000:3000"
+    links:
+      - "db"
+    depends_on:
+      - "db"
+    command: "sh /usr/local/bin/node-entrypoint.sh"
